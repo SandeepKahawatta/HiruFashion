@@ -22,6 +22,15 @@ export default function RegisterPage() {
         <input className="border p-2 w-full" placeholder="Email" value={form.email} onChange={e=>setForm(f=>({...f,email:e.target.value}))}/>
         <input className="border p-2 w-full" type="password" placeholder="Password" value={form.password} onChange={e=>setForm(f=>({...f,password:e.target.value}))}/>
         <button className="px-4 py-2 bg-black text-white rounded" onClick={handleSubmit}>Register</button>
+        <p className="text-sm text-gray-600 mt-4">
+          Already have an account?{' '}
+          <button
+            className="text-blue-600 hover:underline"
+            onClick={() => router.push('/login')}
+          >
+            Login here
+          </button>
+        </p>
       </div>
     </div>
   );
