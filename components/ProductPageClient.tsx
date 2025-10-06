@@ -1,7 +1,7 @@
 "use client"
 
 import Image from 'next/image'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useCart } from '@/lib/cart'
 import type { Product } from '@/lib/products'
 import { useRouter } from 'next/navigation'
@@ -13,20 +13,25 @@ export default function ProductPageClient({ product }: { product: Product }) {
   const [selectedSize, setSelectedSize] = useState('L')
   const [activeTab, setActiveTab] = useState<'Description' | 'Fit' | 'Shipping'>('Description')
   const [currentImage, setCurrentImage] = useState(0)
-  // Duplicate images for gallery; fallback to one image if none provided
-  const images = [product.image, product.image, product.image, product.image]
+
+  // Build a safe gallery
+  const gallery: string[] =
+    Array.isArray((product as any).images) && (product as any).images.length > 0
+      ? (product as any).images
+      : product?.image
+      ? [product.image]
+      : ['/placeholder.png']
+
+  // Keep index in range if data changes
+  useEffect(() => {
+    if (currentImage >= gallery.length) setCurrentImage(0)
+  }, [gallery.length, currentImage])
 
   const incrementQty = () => setQuantity(q => q + 1)
   const decrementQty = () => setQuantity(q => (q > 1 ? q - 1 : 1))
 
-  const handleAddToCart = () => {
-    addItem(product, quantity)
-  }
-
-  const handleBuyNow = () => {
-    addItem(product, quantity)
-    router.push('/cart')
-  }
+  const handleAddToCart = () => addItem(product, quantity)
+  const handleBuyNow = () => { addItem(product, quantity); router.push('/cart') }
 
   return (
     <div className="grid md:grid-cols-2 gap-8">
@@ -34,46 +39,53 @@ export default function ProductPageClient({ product }: { product: Product }) {
       <div className="space-y-4">
         <div className="relative w-full aspect-square overflow-hidden rounded-xl border">
           <Image
-            src={images[currentImage]}
-            alt={product.name}
+            src={gallery[currentImage]}
+            alt={product?.name || 'Product image'}
             fill
             className="object-cover"
             sizes="(min-width: 768px) 50vw, 100vw"
           />
-          {/* Navigation arrows */}
           <button
             type="button"
-            onClick={() => setCurrentImage((currentImage - 1 + images.length) % images.length)}
+            onClick={() => setCurrentImage((currentImage - 1 + gallery.length) % gallery.length)}
             className="absolute top-1/2 left-2 -translate-y-1/2 bg-white bg-opacity-75 rounded-full p-1 shadow"
           >
             ←
           </button>
           <button
             type="button"
-            onClick={() => setCurrentImage((currentImage + 1) % images.length)}
+            onClick={() => setCurrentImage((currentImage + 1) % gallery.length)}
             className="absolute top-1/2 right-2 -translate-y-1/2 bg-white bg-opacity-75 rounded-full p-1 shadow"
           >
             →
           </button>
         </div>
+
         {/* Thumbnails */}
         <div className="grid grid-cols-4 gap-2">
-          {images.map((img, idx) => (
+          {gallery.map((img, idx) => (
             <button
-              key={idx}
+              key={`${img}-${idx}`}
               type="button"
               onClick={() => setCurrentImage(idx)}
-              className={`relative w-full aspect-square rounded overflow-hidden border ${currentImage === idx ? 'ring-2 ring-black' : ''}`}
+              className={`relative w-full aspect-square rounded overflow-hidden border ${
+                currentImage === idx ? 'ring-2 ring-black' : ''
+              }`}
             >
-              <Image src={img} alt={`${product.name} thumbnail ${idx}`} fill className="object-cover" />
+              <Image
+                src={img}
+                alt={`${product?.name || 'Product'} thumbnail ${idx}`}
+                fill
+                className="object-cover"
+              />
             </button>
           ))}
         </div>
       </div>
       {/* Right column: details */}
       <div>
-        <h1 className="text-3xl font-semibold">{product.name.toUpperCase()}</h1>
-        <p className="mt-1 text-sm text-gray-500">SKU: {product.id.toUpperCase()}</p>
+        <h1 className="text-3xl font-semibold">{String(product?.name || '').toUpperCase()}</h1>
+        <p className="mt-1 text-sm text-gray-500">SKU: {String(product?.id || product?._id || '').toUpperCase()}</p>
         {/* Price and payment info */}
         <p className="mt-4 text-2xl font-bold">Rs {(product.price / 100).toFixed(2)}</p>
         <p className="text-sm text-gray-500 mt-1">or 3 × Rs {(product.price / 100 / 3).toFixed(2)} with your card</p>

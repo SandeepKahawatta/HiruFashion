@@ -28,14 +28,14 @@ export function setSessionCookie(payload: SessionPayload) {
   cookies().set(COOKIE_NAME, token, {
     httpOnly: true,
     sameSite: 'lax',
-    secure: true,
     path: '/',
+    secure: process.env.NODE_ENV === 'production',
     maxAge: 60 * 60 * 24 * 7
   });
 }
 
 export function clearSessionCookie() {
-  cookies().set(COOKIE_NAME, '', { httpOnly: true, sameSite: 'lax', secure: true, path: '/', maxAge: 0 });
+  cookies().set(COOKIE_NAME, '', { httpOnly: true, sameSite: 'lax', secure: process.env.NODE_ENV === 'production', path: '/', maxAge: 0 });
 }
 
 export function requireAdmin(role: string | undefined) {

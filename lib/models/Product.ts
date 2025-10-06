@@ -6,7 +6,8 @@ const ProductSchema = new Schema({
   category: String,
   price: { type: Number, required: true }, // store cents
   description: String,
-  image: { type: String, required: true } // Cloudinary URL
+  images: { type: [String], default: [], required: true },
+  image: { type: String } // Cloudinary URL
 }, { timestamps: true });
 
 export default models.Product || model('Product', ProductSchema);
