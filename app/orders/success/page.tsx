@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { CheckCircle } from "lucide-react";
 
-export default function OrderSuccessPage() {
+function OrderSuccessPage() {
   const searchParams = useSearchParams();
   const [orderId, setOrderId] = useState<string | null>(null);
 
@@ -51,4 +51,12 @@ export default function OrderSuccessPage() {
       </div>
     </div>
   );
+}
+
+export default function SuccessPage() {
+  return (
+    <Suspense fallback={<div className="text-center p-8">Loading your order details...</div>}>
+      <OrderSuccessPage />
+    </Suspense>
+  )
 }
