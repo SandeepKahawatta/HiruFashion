@@ -2,9 +2,11 @@
 import { useCartDetails } from '@/lib/cart'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 export default function CartPage() {
   const { enriched, subtotalCents, updateQty, removeItem, clear } = useCartDetails()
+  const router = useRouter()
 
   if (enriched.length === 0) {
     return (
@@ -51,7 +53,12 @@ export default function CartPage() {
           <span>Subtotal</span>
           <span className="font-semibold">Rs {(subtotalCents / 100).toFixed(2)}</span>
         </div>
-        <button className="w-full mt-4 py-3 rounded-xl bg-black text-white" onClick={clear}>Fake Checkout</button>
+        <button
+          className="w-full mt-4 py-3 rounded-xl bg-black text-white"
+          onClick={() => router.push("/checkout")}
+        >
+          Checkout
+        </button>
         <p className="text-xs text-gray-500 mt-2">(Demo) This clears the cart and simulates a checkout.</p>
       </div>
     </div>
