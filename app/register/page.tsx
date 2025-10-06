@@ -11,7 +11,13 @@ export default function RegisterPage() {
       method:'POST',
       body: JSON.stringify(form)
     });
-    if (res.ok) router.push('/');
+    if (res.ok) {
+      sessionStorage.setItem('show_welcome_once', '1')
+      // after successful login/register:
+      window.dispatchEvent(new Event('auth:changed'));
+      sessionStorage.setItem('show_welcome_once', '1'); // (your existing line)
+      router.push('/');
+    }
     else alert('Registration failed');
   }
   return (
