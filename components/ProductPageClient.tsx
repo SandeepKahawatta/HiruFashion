@@ -3,8 +3,8 @@
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { useCart } from '@/lib/cart'
-import type { Product } from '@/lib/products'
 import { useRouter } from 'next/navigation'
+import { Product } from '@/lib/types'
 
 export default function ProductPageClient({ product }: { product: Product }) {
   const { addItem } = useCart()
@@ -30,8 +30,8 @@ export default function ProductPageClient({ product }: { product: Product }) {
   const incrementQty = () => setQuantity(q => q + 1)
   const decrementQty = () => setQuantity(q => (q > 1 ? q - 1 : 1))
 
-  const handleAddToCart = () => addItem(product, quantity)
-  const handleBuyNow = () => { addItem(product, quantity); router.push('/cart') }
+  const handleAddToCart = () => addItem(String(product?.id || product?._id || ''), quantity)
+  const handleBuyNow = () => { addItem(String(product?.id || product?._id || ''), quantity); router.push('/cart') }
 
   return (
     <div className="grid md:grid-cols-2 gap-8">

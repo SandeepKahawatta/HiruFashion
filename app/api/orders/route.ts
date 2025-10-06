@@ -17,7 +17,6 @@ export async function POST(req: Request) {
   const order = await Order.create({
     userId: session.userId,
     email: session.email,
-    name: session.name,
     ...data,
   });
 
