@@ -11,6 +11,7 @@
     "bcryptjs": "^3.0.2",
     "cloudinary": "^2.7.0",
     "cookie": "^1.0.2",
+    "framer-motion": "^12.23.22",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.544.0",
     "mongoose": "^8.19.0",

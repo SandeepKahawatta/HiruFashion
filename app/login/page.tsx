@@ -11,7 +11,10 @@ export default function LoginPage() {
       method:'POST',
       body: JSON.stringify(form)
     });
-    if (res.ok) router.push('/');
+    if (res.ok) {
+      sessionStorage.setItem('show_welcome_once', '1')
+      router.push('/');
+    }
     else alert('Login failed');
   }
   return (

@@ -1,6 +1,7 @@
 // app/page.tsx  (Home)
 import Link from 'next/link'
 import ProductCard from '@/components/ProductCard'
+import WelcomeGate from '@/components/WelcomeGate'
 
 type Product = {
   id?: string
@@ -42,6 +43,8 @@ export default async function HomePage() {
   const featured = pickRandom(products, Math.min(6, products.length))
 
   return (
+    <>
+    <WelcomeGate />
     <div className="px-4 py-6 space-y-6">
       {/* Categories */}
       <section>
@@ -69,5 +72,6 @@ export default async function HomePage() {
         </div>
       </section>
     </div>
+    </>
   )
 }
