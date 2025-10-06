@@ -11,14 +11,22 @@ export default function LoginPage() {
       method:'POST',
       body: JSON.stringify(form)
     });
-    if (res.ok) {
-      sessionStorage.setItem('show_welcome_once', '1')
-      // after successful login/register:
-      window.dispatchEvent(new Event('auth:changed'));
-      sessionStorage.setItem('show_welcome_once', '1'); // (your existing line)
-      router.push('/');
+    if (!res.ok) {
+      alert('Login failed');
+      return;
     }
-    else alert('Login failed');
+
+    const data = await res.json(); // { ok: true, role: 'admin' | 'user' }
+
+    // let the rest of the app update immediately
+    window.dispatchEvent(new Event('auth:changed'));
+    sessionStorage.setItem('show_welcome_once', '1');
+
+    if (data.role === 'admin') {
+      router.push('/admin/products');
+    } else {
+      router.push('/'); 
+    }
   }
   return (
     <div className="container py-8">
