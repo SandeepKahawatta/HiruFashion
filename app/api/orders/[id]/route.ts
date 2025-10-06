@@ -15,7 +15,7 @@ export async function GET(
   const id = params.id?.trim();
   if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 });
 
-  const order = await Order.findById(id).lean();
+  const order = await Order.findById(id).lean<{ _id: unknown; userId: unknown; [key: string]: any }>();
   if (!order) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
   // Only owner or admin can view
@@ -54,7 +54,10 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   const updated = await Order.findByIdAndUpdate(id, patch, { new: true }).lean();
   if (!updated) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
-  return NextResponse.json({ ...updated, id: updated._id?.toString?.() ?? updated.id });
+  if (Array.isArray(updated)) {
+    return NextResponse.json({ error: 'Unexpected array result' }, { status: 500 });
+  }
+  return NextResponse.json({ ...updated, id: (updated as any)._id?.toString?.() ?? (updated as any).id });
 }
 
 export async function DELETE(_req: Request, { params }: { params: { id: string } }) {

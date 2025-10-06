@@ -38,7 +38,7 @@ export default function CheckoutPage() {
         price: row.product.price,
         qty: row.qty,
         size: row.size,
-        color: row.color || null,
+        // color: row.color || null, // Removed because 'color' does not exist on type
         image: row.product.images?.[0] || row.product.image,
       })),
     };
