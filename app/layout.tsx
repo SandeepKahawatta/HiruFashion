@@ -3,6 +3,7 @@ import './globals.css'
 import { Inter } from 'next/font/google'
 import Navbar from '@/components/Navbar'
 import { CartProvider } from '@/lib/cart'
+import { ensureAdminSeed } from '@/lib/seed/seed'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -11,7 +12,8 @@ export const metadata: Metadata = {
   description: 'A simple fashion store built with Next.js',
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  await ensureAdminSeed();
   return (
     <html lang="en">
       <body className={`${inter.className} min-h-screen flex flex-col`}>
