@@ -32,6 +32,7 @@ export async function GET() {
   return NextResponse.json(normalized);
 }
 
+// app/api/products/route.ts
 export async function POST(req: Request) {
   await dbConnect();
   const session = getSessionFromCookies();
@@ -39,29 +40,29 @@ export async function POST(req: Request) {
 
   const data = await req.json();
 
-  // ✅ Validate required fields
+  // ✅ Validate
+  const ALLOWED = ['slippers', 'frocks', 'blouses', 'skirts', 'pants', 'bags'];
   if (!data.name || !data.slug || !data.price) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
   }
-
-  // ✅ Ensure at least one image URL
+  if (!ALLOWED.includes((data.category || '').toLowerCase())) {
+    return NextResponse.json({ error: 'Invalid category' }, { status: 400 });
+  }
   if (!Array.isArray(data.images) || data.images.length === 0) {
     return NextResponse.json({ error: 'At least one image required' }, { status: 400 });
   }
+  if (!Array.isArray(data.colors)) data.colors = [];
+  if (!Array.isArray(data.sizes)) data.sizes = [];
 
-  // ✅ Keep legacy field for backward compatibility
-  data.image = data.images[0];
+  data.category = data.category.toLowerCase();
+  data.image = data.images[0]; // keep legacy cover
 
   const created = await Product.create(data);
 
   const normalized = {
     ...created.toObject(),
     id: created._id.toString(),
-    images: created.images && created.images.length > 0
-      ? created.images
-      : created.image
-      ? [created.image]
-      : []
+    images: created.images?.length ? created.images : (created.image ? [created.image] : []),
   };
 
   return NextResponse.json(normalized, { status: 201 });
