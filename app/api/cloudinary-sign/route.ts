@@ -27,11 +27,17 @@ export async function GET() {
     process.env.CLOUDINARY_API_SECRET!
   );
 
-  return NextResponse.json({
-    timestamp,
-    signature,
-    uploadPreset: UPLOAD_PRESET,
-    apiKey: process.env.CLOUDINARY_API_KEY!,
-    cloudName: process.env.CLOUDINARY_CLOUD_NAME!,
-  });
+  return NextResponse.json(
+    {
+      timestamp,
+      signature,
+      apiKey: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY!,
+      cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME!,
+      uploadPreset: UPLOAD_PRESET,
+    },
+    {
+      // belt & suspenders: tell CDNs/browsers not to cache
+      headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' },
+    }
+  )
 }
