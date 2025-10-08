@@ -2,6 +2,7 @@
 import Link from 'next/link'
 import ProductCard from '@/components/ProductCard'
 import WelcomeGate from '@/components/WelcomeGate'
+import CategoryCard from '@/components/CategoryCard'
 
 type Product = {
   id?: string
@@ -48,19 +49,15 @@ export default async function HomePage() {
     <div className="px-4 py-6 space-y-6">
       {/* Categories */}
       <section>
-        <h2 className="text-lg font-semibold mb-3">Shop by Category</h2>
-        <div className="flex flex-wrap gap-2">
-          {categories.map((c) => (
-            <Link
-              key={c}
-              href={`/category/${slugify(c)}`}
-              className="px-3 py-2 text-sm border rounded-full active:bg-gray-100"
-            >
-              {c}
-            </Link>
-          ))}
-        </div>
-      </section>
+  <h2 className="text-lg font-semibold mb-3">Shop by Category</h2>
+  {/* grid of cards, mobile-first */}
+  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+    {categories.map((c) => (
+      <CategoryCard key={c} name={c} />
+    ))}
+  </div>
+</section>
+
 
       {/* Featured (random 6) */}
       <section>
