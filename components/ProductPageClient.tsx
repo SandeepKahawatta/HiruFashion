@@ -1,145 +1,251 @@
+// components/ProductPageClient.tsx
 "use client"
 
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useCart } from '@/lib/cart'
 import { useRouter } from 'next/navigation'
-import { Product } from '@/lib/types'
+
+// Mirror your Product schema shape
+export type Product = {
+  id?: string
+  _id?: string
+  name: string
+  slug: string
+  category: 'slippers'|'frocks'|'blouses'|'skirts'|'pants'|'bags'
+  price: number // cents
+  description?: string
+  images?: string[]
+  image?: string // legacy
+  colors?: string[]
+  sizes?: string[]
+}
 
 export default function ProductPageClient({ product }: { product: Product }) {
-  const { addItem } = useCart()
   const router = useRouter()
-  const [quantity, setQuantity] = useState(1)
-  const [selectedSize, setSelectedSize] = useState('L')
-  const [activeTab, setActiveTab] = useState<'Description' | 'Fit' | 'Shipping'>('Description')
+  const { addItem } = useCart()
+
   const [currentImage, setCurrentImage] = useState(0)
+  const [quantity, setQuantity] = useState(1)
+  const [selectedColor, setSelectedColor] = useState<string | undefined>(undefined)
+  const [selectedSize, setSelectedSize] = useState<string | undefined>(undefined)
+  const [activeTab, setActiveTab] = useState<'Description'|'Fit'|'Shipping'>('Description')
 
-  // Build a safe gallery
-  const gallery: string[] =
-    Array.isArray((product as any).images) && (product as any).images.length > 0
-      ? (product as any).images
-      : product?.image
-      ? [product.image]
-      : ['/placeholder.png']
+  // Build gallery safely
+  const gallery = useMemo(() => {
+    const arr = (Array.isArray(product.images) && product.images.length > 0)
+      ? product.images
+      : (product.image ? [product.image] :['https://placehold.co/800x800/png'])
+    return arr
+  }, [product.images, product.image])
 
-  // Keep index in range if data changes
+  const productId = String(product.id ?? (product as any)._id ?? "")
+
+  // Keep image index in range if gallery changes
   useEffect(() => {
     if (currentImage >= gallery.length) setCurrentImage(0)
   }, [gallery.length, currentImage])
 
-  const incrementQty = () => setQuantity(q => q + 1)
-  const decrementQty = () => setQuantity(q => (q > 1 ? q - 1 : 1))
+  // Defaults: preselect first available color/size if present
+  useEffect(() => {
+    if (product.colors?.length && !selectedColor) {
+      setSelectedColor(product.colors[0])
+    }
+  }, [product.colors, selectedColor])
+  useEffect(() => {
+    if (product.sizes?.length && !selectedSize) {
+      setSelectedSize(product.sizes[0])
+    }
+  }, [product.sizes, selectedSize])
 
-  const handleAddToCart = () => addItem(String(product?.id || product?._id || ''), quantity)
-  const handleBuyNow = () => { addItem(String(product?.id || product?._id || ''), quantity); router.push('/cart') }
+  const id = String(product.id || product._id || '')
+  const priceLKR = (product.price / 100).toFixed(2)
+  const subtotalLKR = ((product.price * quantity) / 100).toFixed(2)
+
+  const mustChooseColor = (product.colors?.length ?? 0) > 0
+  const mustChooseSize  = (product.sizes?.length ?? 0) > 0
+  const canAdd = !!id && (!mustChooseColor || selectedColor) && (!mustChooseSize || selectedSize)
+
+  const handleAddToCart = () => {
+    if (!canAdd) return
+    // example in your ProductPageClient
+    addItem(productId, quantity, selectedSize, selectedColor)
+
+  }
+
+  const handleBuyNow = () => {
+    if (!canAdd) return
+    // example in your ProductPageClient
+    addItem(productId, quantity, selectedSize, selectedColor)
+    router.push('/cart')
+  }
 
   return (
     <div className="grid md:grid-cols-2 gap-8">
-      {/* Left column: image gallery */}
+      {/* Left: images */}
       <div className="space-y-4">
-        <div className="relative w-full aspect-square overflow-hidden rounded-xl border">
+        <div className="relative w-full aspect-square overflow-hidden rounded-2xl border">
           <Image
             src={gallery[currentImage]}
             alt={product?.name || 'Product image'}
             fill
             className="object-cover"
             sizes="(min-width: 768px) 50vw, 100vw"
+            priority
           />
-          <button
-            type="button"
-            onClick={() => setCurrentImage((currentImage - 1 + gallery.length) % gallery.length)}
-            className="absolute top-1/2 left-2 -translate-y-1/2 bg-white bg-opacity-75 rounded-full p-1 shadow"
-          >
-            ←
-          </button>
-          <button
-            type="button"
-            onClick={() => setCurrentImage((currentImage + 1) % gallery.length)}
-            className="absolute top-1/2 right-2 -translate-y-1/2 bg-white bg-opacity-75 rounded-full p-1 shadow"
-          >
-            →
-          </button>
+          {/* Arrows */}
+          {gallery.length > 1 && (
+            <>
+              <button
+                type="button"
+                onClick={() => setCurrentImage((currentImage - 1 + gallery.length) % gallery.length)}
+                className="absolute top-1/2 left-2 -translate-y-1/2 bg-white/80 backdrop-blur rounded-full p-2 shadow"
+                aria-label="Previous image"
+              >
+                ←
+              </button>
+              <button
+                type="button"
+                onClick={() => setCurrentImage((currentImage + 1) % gallery.length)}
+                className="absolute top-1/2 right-2 -translate-y-1/2 bg-white/80 backdrop-blur rounded-full p-2 shadow"
+                aria-label="Next image"
+              >
+                →
+              </button>
+            </>
+          )}
         </div>
 
         {/* Thumbnails */}
-        <div className="grid grid-cols-4 gap-2">
-          {gallery.map((img, idx) => (
-            <button
-              key={`${img}-${idx}`}
-              type="button"
-              onClick={() => setCurrentImage(idx)}
-              className={`relative w-full aspect-square rounded overflow-hidden border ${
-                currentImage === idx ? 'ring-2 ring-black' : ''
-              }`}
-            >
-              <Image
-                src={img}
-                alt={`${product?.name || 'Product'} thumbnail ${idx}`}
-                fill
-                className="object-cover"
-              />
-            </button>
-          ))}
-        </div>
-      </div>
-      {/* Right column: details */}
-      <div>
-        <h1 className="text-3xl font-semibold">{String(product?.name || '').toUpperCase()}</h1>
-        <p className="mt-1 text-sm text-gray-500">SKU: {String(product?.id || product?._id || '').toUpperCase()}</p>
-        {/* Price and payment info */}
-        <p className="mt-4 text-2xl font-bold">Rs {(product.price / 100).toFixed(2)}</p>
-        <p className="text-sm text-gray-500 mt-1">or 3 × Rs {(product.price / 100 / 3).toFixed(2)} with your card</p>
-        {/* Size selection */}
-        <div className="mt-4">
-          <span className="text-sm font-medium">Size:</span>
-          <div className="mt-2 flex gap-2">
-            {['L', 'XL'].map(size => (
+        {gallery.length > 1 && (
+          <div className="grid grid-cols-4 gap-2">
+            {gallery.map((img, idx) => (
               <button
-                key={size}
-                onClick={() => setSelectedSize(size)}
-                className={`px-4 py-2 border rounded ${selectedSize === size ? 'bg-black text-white' : 'bg-white text-gray-700'}`}
+                key={`${img}-${idx}`}
+                type="button"
+                onClick={() => setCurrentImage(idx)}
+                className={`relative w-full aspect-square rounded-xl overflow-hidden border ${
+                  currentImage === idx ? 'ring-2 ring-black' : ''
+                }`}
+                aria-label={`Show image ${idx + 1}`}
               >
-                {size}
+                <Image
+                  src={img}
+                  alt={`${product?.name || 'Product'} thumbnail ${idx + 1}`}
+                  fill
+                  className="object-cover"
+                />
               </button>
             ))}
           </div>
-        </div>
-        {/* Quantity selector */}
-        <div className="mt-4">
-          <span className="text-sm font-medium">Quantity:</span>
-          <div className="mt-2 flex items-center gap-2">
-            <button onClick={decrementQty} className="px-3 py-1 border rounded">-</button>
-            <span className="w-10 text-center">{quantity}</span>
-            <button onClick={incrementQty} className="px-3 py-1 border rounded">+</button>
+        )}
+      </div>
+
+      {/* Right: details */}
+      <div>
+        <h1 className="text-2xl sm:text-3xl font-semibold">{product?.name}</h1>
+        <p className="mt-1 text-xs sm:text-sm text-gray-500">
+          SKU: {String(product?.id || product?._id || '').toUpperCase()}
+        </p>
+
+        {/* Price */}
+        <p className="mt-4 text-2xl font-bold">Rs {priceLKR}</p>
+        <p className="text-sm text-gray-500 mt-1">
+          or 3 × Rs {(product.price / 100 / 3).toFixed(2)} with your card
+        </p>
+
+        {/* Colors */}
+        {product.colors?.length ? (
+          <div className="mt-5">
+            <div className="text-sm font-medium mb-2">Color</div>
+            <div className="flex flex-wrap gap-2">
+              {product.colors.map((c) => (
+                <button
+                  key={c}
+                  onClick={() => setSelectedColor(c)}
+                  className={`w-9 h-9 rounded-full border shadow-sm flex items-center justify-center ${
+                    selectedColor === c ? 'ring-2 ring-black' : ''
+                  }`}
+                  style={{ backgroundColor: isHexColor(c) ? c : undefined }}
+                  aria-label={`Select color ${c}`}
+                  title={c}
+                >
+                  {!isHexColor(c) && (
+                    <span className="text-xs px-2">{c}</span>
+                  )}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
-        {/* Subtotal */}
-        <p className="mt-4 text-sm">Subtotal: Rs {((product.price / 100) * quantity).toFixed(2)}</p>
-        {/* Stock warning and progress bar */}
-        <p className="mt-2 text-xs text-red-600">Please hurry! Only 4 left in stock</p>
-        <div className="mt-1 h-2 w-full bg-red-100 rounded-full overflow-hidden">
-          <div className="h-full bg-red-500" style={{ width: '25%' }} />
-        </div>
-        {/* Buttons row */}
-        <div className="mt-6 flex flex-col gap-3">
-          <div className="flex items-center gap-4">
+        ) : null}
+
+        {/* Sizes */}
+        {product.sizes?.length ? (
+          <div className="mt-5">
+            <div className="text-sm font-medium mb-2">Size</div>
+            <div className="flex flex-wrap gap-2">
+              {product.sizes.map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setSelectedSize(s)}
+                  className={`px-4 py-2 rounded-xl border text-sm shadow-sm ${
+                    selectedSize === s ? 'bg-black text-white' : 'bg-white text-gray-800'
+                  }`}
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : null}
+
+        {/* Quantity */}
+        <div className="mt-5">
+          <span className="text-sm font-medium">Quantity</span>
+          <div className="mt-2 inline-flex items-center gap-2 border rounded-xl px-2 py-1">
             <button
-              onClick={handleAddToCart}
-              className="flex-1 border border-red-500 text-red-600 font-medium py-3 rounded hover:bg-red-50"
+              onClick={() => setQuantity(q => Math.max(1, q - 1))}
+              className="px-3 py-1 rounded hover:bg-gray-100"
+              aria-label="Decrease quantity"
             >
-              ADD TO CART
+              −
             </button>
-            {/* Icons: Heart and Share */}
-            <span role="img" aria-label="favorite" className="text-2xl cursor-pointer">❤️</span>
-            <span role="img" aria-label="share" className="text-2xl cursor-pointer">🔗</span>
+            <span className="w-10 text-center">{quantity}</span>
+            <button
+              onClick={() => setQuantity(q => q + 1)}
+              className="px-3 py-1 rounded hover:bg-gray-100"
+              aria-label="Increase quantity"
+            >
+              +
+            </button>
           </div>
+        </div>
+
+        {/* Subtotal */}
+        <p className="mt-4 text-sm">Subtotal: Rs {subtotalLKR}</p>
+
+        {/* Actions */}
+        <div className="mt-6 flex flex-col sm:flex-row gap-3 sm:items-center">
           <button
+            disabled={!canAdd}
+            onClick={handleAddToCart}
+            className={`flex-1 border font-medium py-3 rounded-xl transition ${
+              canAdd ? 'border-red-500 text-red-600 hover:bg-red-50' : 'border-gray-200 text-gray-400 cursor-not-allowed'
+            }`}
+          >
+            ADD TO CART
+          </button>
+          <button
+            disabled={!canAdd}
             onClick={handleBuyNow}
-            className="w-full bg-black text-white py-3 rounded hover:bg-gray-800"
+            className={`w-full sm:w-auto bg-black text-white py-3 rounded-xl transition ${
+              canAdd ? 'hover:bg-gray-800' : 'opacity-50 cursor-not-allowed'
+            }`}
           >
             BUY IT NOW
           </button>
         </div>
+
         {/* Shipping & policies */}
         <ul className="mt-6 space-y-2 text-sm">
           <li className="flex items-start gap-2">
@@ -152,49 +258,47 @@ export default function ProductPageClient({ product }: { product: Product }) {
           </li>
           <li className="flex items-start gap-2">
             <span role="img" aria-label="international">🌍</span>
-            <span>For International Customers<br />Your total bill value will be converted to LKR (Sri Lankan Rupees) at checkout based on the current exchange rate.</span>
+            <span>For International Customers<br />Your total will be converted to LKR at checkout.</span>
           </li>
         </ul>
       </div>
-      {/* Tabs below across full width */}
+
+      {/* Tabs across full width */}
       <div className="md:col-span-2 mt-8">
         <div className="border-b flex gap-6 text-sm font-medium">
-          <button
-            className={`py-2 ${activeTab === 'Description' ? 'border-b-2 border-black text-black' : 'text-gray-500'}`}
-            onClick={() => setActiveTab('Description')}
-          >
-            Description
-          </button>
-          <button
-            className={`py-2 ${activeTab === 'Fit' ? 'border-b-2 border-black text-black' : 'text-gray-500'}`}
-            onClick={() => setActiveTab('Fit')}
-          >
-            Fit and Fabric
-          </button>
-          <button
-            className={`py-2 ${activeTab === 'Shipping' ? 'border-b-2 border-black text-black' : 'text-gray-500'}`}
-            onClick={() => setActiveTab('Shipping')}
-          >
-            Shipping & Return
-          </button>
+          {(['Description','Fit','Shipping'] as const).map(tab => (
+            <button
+              key={tab}
+              className={`py-2 ${activeTab === tab ? 'border-b-2 border-black text-black' : 'text-gray-500'}`}
+              onClick={() => setActiveTab(tab)}
+            >
+              {tab === 'Fit' ? 'Fit and Fabric' : tab}
+            </button>
+          ))}
         </div>
+
         <div className="mt-4 text-sm text-gray-700 space-y-4">
           {activeTab === 'Description' && (
-            <p>{product.description}</p>
+            <p>{product.description || 'No description available.'}</p>
           )}
           {activeTab === 'Fit' && (
-            <p>This garment is crafted from soft, breathable fabric with a modern fit, perfect for layering or wearing on its own during cooler months.</p>
+            <p>This garment is crafted from soft, breathable fabric with a modern fit, perfect for layering or wearing on its own.</p>
           )}
           {activeTab === 'Shipping' && (
             <p>
-              We offer free standard shipping on orders over Rs.6000 and accept exchanges from physical outlets. International customers will see their total bill converted to LKR at checkout.
+              We offer free standard shipping on orders over Rs.6000 and accept exchanges at physical outlets. International orders are converted to LKR at checkout.
             </p>
           )}
           <p className="italic text-xs text-gray-500">
-            *Product image may differ to actual due to photographic lighting*
+            *Product image may differ from actual due to photographic lighting.*
           </p>
         </div>
       </div>
     </div>
   )
+}
+
+/** util: check if color string is a hex */
+function isHexColor(value: string) {
+  return /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(value.trim())
 }

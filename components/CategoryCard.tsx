@@ -8,9 +8,10 @@ const CATEGORY_IMAGES: Record<string, string> = {
   pants:   'https://images.unsplash.com/photo-1519741497674-611481863552',
   frock:   'https://images.unsplash.com/photo-1541099649105-f69ad21f3246',
   slippers:'https://images.unsplash.com/photo-1519741497674-611481863552',
+  bags:     'https://images.unsplash.com/photo-1514996937319-344454492b37',
 };
 const DEFAULT_CAT_IMG =
-  'https://images.unsplash.com/photo-1520975940479-27a9b6fd18a7';
+  'https://images.unsplash.com/photo-1519741497674-611481863552';
 
 function slugify(s: string) {
   return s.toLowerCase().trim().replace(/\s+/g, '-')
