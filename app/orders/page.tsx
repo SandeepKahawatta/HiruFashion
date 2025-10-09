@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 type OrderItem = {
   productId: string;
   name: string;
-  price: number;
+  unitPrice: number;
   qty: number;
   size?: string;
   color?: string;
@@ -15,8 +15,7 @@ type OrderItem = {
 
 type Order = {
   id: string;
-  _id?: string;
-  status: 'pending'|'paid'|'shipped'|'cancelled';
+  status: 'pending' | 'paid' | 'shipped' | 'cancelled';
   subtotal: number;
   createdAt: string;
   items: OrderItem[];
@@ -29,7 +28,7 @@ export default function OrdersPage() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch('/api/orders/mine', { credentials: 'include' });
+        const res = await fetch('/api/orders', { credentials: 'include' });
         if (res.status === 401) {
           setError('Please log in to view your orders.');
           return;
@@ -45,70 +44,62 @@ export default function OrdersPage() {
 
   if (error) {
     return (
-      <div className="px-4 py-8 text-center">
-        <h1 className="text-xl font-semibold mb-2">Orders</h1>
+      <div className="px-4 py-10 text-center">
+        <h1 className="text-2xl font-semibold mb-2">Orders</h1>
         <p className="text-gray-600">{error}</p>
-        <div className="mt-4">
-          <Link href="/api/auth/login" className="underline">Log in</Link>
-        </div>
+        <Link href="/api/auth/login" className="underline mt-3 inline-block">
+          Log in
+        </Link>
       </div>
     );
   }
 
   if (!orders) {
-    return <div className="px-4 py-8 text-center text-gray-500">Loading…</div>;
+    return <div className="px-4 py-10 text-center text-gray-500">Loading…</div>;
   }
 
   if (orders.length === 0) {
     return (
-      <div className="px-4 py-8 text-center">
-        <h1 className="text-xl font-semibold mb-2">Your Orders</h1>
+      <div className="px-4 py-10 text-center">
+        <h1 className="text-2xl font-semibold mb-2">Your Orders</h1>
         <p className="text-gray-600">No orders yet.</p>
-        <div className="mt-4">
-          <Link href="/" className="underline">Start shopping</Link>
-        </div>
+        <Link href="/" className="underline mt-3 inline-block">
+          Start shopping
+        </Link>
       </div>
     );
   }
 
   return (
-    <div className="px-4 py-6">
-      <h1 className="text-xl font-semibold mb-4">Your Orders</h1>
-
-      <div className="space-y-3">
-        {orders.map((o) => {
-          const thumb = o.items?.[0]?.image;
-          const totalQty = o.items?.reduce((n, it) => n + (it.qty || 0), 0);
-          return (
-            <Link
-              key={o.id}
-              href={`/orders/${o.id}`}
-              className="block border rounded-lg p-3 bg-white active:bg-gray-50"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-16 h-16 rounded bg-gray-100 overflow-hidden flex-shrink-0">
-                  {thumb ? (
-                    // Use <img> here to avoid next/image domain config friction on mobile
-                    <img src={thumb} alt="" className="w-full h-full object-cover" />
-                  ) : null}
-                </div>
-
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm text-gray-500">Order #{o.id.slice(-6)}</div>
-                  <div className="text-sm text-gray-700 truncate">
-                    {new Date(o.createdAt).toLocaleString()}
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    {totalQty} item{o.items.length > 1 ? 's' : ''} · Rs {(o.subtotal / 100).toFixed(2)}
-                  </div>
-                </div>
-
-                <StatusBadge status={o.status} />
+    <div className="px-4 py-6 space-y-4">
+      <h1 className="text-xl font-semibold">Your Orders</h1>
+      {orders.map((o) => {
+        const thumb = o.items?.[0]?.image;
+        const totalQty = o.items?.reduce((n, it) => n + (it.qty || 0), 0);
+        return (
+          <Link
+            key={o.id}
+            href={`/orders/${o.id}`}
+            className="block border rounded-xl p-3 bg-white shadow-sm active:bg-gray-50"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-16 h-16 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0">
+                {thumb ? <img src={thumb} alt="" className="w-full h-full object-cover" /> : null}
               </div>
-            </Link>
-          );
-        })}
-      </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-sm text-gray-500">Order #{o.id.slice(-6)}</div>
+                <div className="text-sm text-gray-700 truncate">
+                  {new Date(o.createdAt).toLocaleString()}
+                </div>
+                <div className="text-xs text-gray-500">
+                  {totalQty} item{o.items.length > 1 ? 's' : ''} · Rs {(o.subtotal / 100).toFixed(2)}
+                </div>
+              </div>
+              <StatusBadge status={o.status} />
+            </div>
+          </Link>
+        );
+      })}
     </div>
   );
 }
@@ -121,7 +112,7 @@ function StatusBadge({ status }: { status: Order['status'] }) {
     cancelled: 'bg-red-100 text-red-700',
   };
   return (
-    <span className={`text-xs px-2 py-1 rounded ${map[status]}`}>
+    <span className={`text-xs px-2 py-1 rounded font-medium ${map[status]}`}>
       {status.toUpperCase()}
     </span>
   );

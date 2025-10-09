@@ -116,6 +116,7 @@ export function useCart() {
 
 /** What we need from /api/products?ids=... */
 type ProductLite = {
+  category: ReactNode
   id: string
   name: string
   price: number
