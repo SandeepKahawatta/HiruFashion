@@ -60,14 +60,14 @@ export default async function HomePage() {
 
 
       {/* Featured (random 6) */}
-      <section>
+      {/* <section>
         <h2 className="text-lg font-semibold mb-3">Featured</h2>
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
           {featured.map((p) => (
             <ProductCard key={(p as any).id || (p as any)._id} product={p as any} />
           ))}
         </div>
-      </section>
+      </section> */}
     </div>
     </>
   )
