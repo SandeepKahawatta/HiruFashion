@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { useAuthClient } from './auth-client';
+import { toast } from 'sonner';
 
 type WishlistContextType = {
     wishlist: string[];
@@ -42,10 +43,14 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     }, [fetchWishlist]);
 
     const addToWishlist = async (productId: string) => {
-        if (!user) return; // Or show login toast
+        if (!user) {
+            toast.error('Please login', { description: 'You need to be logged in to add items to your wishlist.' });
+            return;
+        }
 
         // Optimistic update
         setWishlist(prev => [...prev, productId]);
+        toast.success('Added to wishlist');
 
         try {
             await fetch('/api/user/wishlist', {
@@ -57,6 +62,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
             console.error('Failed to add to wishlist', error);
             // Revert on error
             setWishlist(prev => prev.filter(id => id !== productId));
+            toast.error('Failed to add to wishlist');
         }
     };
 
@@ -65,6 +71,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
 
         // Optimistic update
         setWishlist(prev => prev.filter(id => id !== productId));
+        toast.info('Removed from wishlist');
 
         try {
             await fetch('/api/user/wishlist', {
@@ -76,6 +83,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
             console.error('Failed to remove from wishlist', error);
             // Revert
             setWishlist(prev => [...prev, productId]);
+            toast.error('Failed to remove from wishlist');
         }
     };
 
