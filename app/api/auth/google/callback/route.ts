@@ -19,7 +19,7 @@ export async function GET(req: Request) {
     try {
         const clientId = process.env.GOOGLE_CLIENT_ID;
         const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-        const redirectUri = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/auth/google/callback`;
+        const redirectUri = `${process.env.NEXT_PUBLIC_APP_URL || 'https://hiru-fashion-dev.vercel.app'}/api/auth/google/callback`;
 
         // 1. Exchange code for tokens
         const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
