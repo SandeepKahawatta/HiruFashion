@@ -82,7 +82,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       if (Array.isArray(parsed.items)) {
         parsed.items.forEach(i => dispatch({ type: "ADD", id: i.id, qty: i.qty, size: i.size, color: i.color }))
       }
-    } catch {}
+    } catch { }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -168,20 +168,23 @@ export function AddToCartButton({
   size,
   color,
   className = "",
+  icon,
 }: {
   id: string
   qty?: number
   size?: string
   color?: string
   className?: string
+  icon?: React.ReactNode
 }) {
   const { addItem } = useCart()
   return (
     <button
-      className={`rounded-xl bg-black text-white px-4 py-3 ${className}`}
+      className={`rounded-xl bg-black text-white px-4 py-3 flex items-center justify-center gap-2 ${className}`}
       onClick={() => addItem(id, qty, size, color)}
     >
-      Add to cart
+      {icon}
+      <span>Add to cart</span>
     </button>
   )
 }
