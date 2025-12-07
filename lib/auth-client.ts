@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState, useCallback } from 'react';
 
-type MeResponse = { user: { id: string; name?: string; email?: string; role?: string } | null };
+type MeResponse = { user: { id: string; name?: string; email?: string; role?: string; image?: string } | null };
 
 export function useAuthClient() {
   const [user, setUser] = useState<MeResponse['user']>(null);
