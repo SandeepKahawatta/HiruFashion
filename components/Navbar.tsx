@@ -323,7 +323,6 @@ export default function Navbar() {
               <div className="flex-1 overflow-y-auto py-4">
                 <nav className="space-y-1 px-3">
                   <MobileNavLink href="/" icon={<ShoppingBag size={20} />} label="Shop" onClick={() => setIsMenuOpen(false)} />
-                  <MobileNavLink href="/new-arrivals" icon={<Package size={20} />} label="New Arrivals" onClick={() => setIsMenuOpen(false)} />
                   <MobileNavLink href="/collections" icon={<Menu size={20} />} label="Collections" onClick={() => setIsMenuOpen(false)} />
                   <div className="my-4 border-t border-gray-100"></div>
                   <MobileNavLink href="/wishlist" icon={<Heart size={20} />} label="Wishlist" onClick={() => setIsMenuOpen(false)} />
