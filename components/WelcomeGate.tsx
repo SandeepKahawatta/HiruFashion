@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import WelcomeSplash from './WelcomeSplash'
-import { deleteCookie } from 'cookies-next' // We might need a way to clear cookie client side, or just set expired
 
 export default function WelcomeGate({ initialShow = false }: { initialShow?: boolean }) {
   const [show, setShow] = useState(initialShow)
