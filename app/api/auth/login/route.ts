@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import { dbConnect } from '@/lib/db';
 import User from '@/lib/models/User';
 import bcrypt from 'bcryptjs';
-import { setSessionCookie } from '@/lib/auth';
+import { setSessionCookie, setWelcomeCookie } from '@/lib/auth';
 
 export async function POST(req: Request) {
   await dbConnect();
@@ -18,6 +18,7 @@ export async function POST(req: Request) {
 
   // sets an httpOnly session cookie
   setSessionCookie({ userId: user._id.toString(), role: user.role, email: user.email });
+  setWelcomeCookie();
 
   // 👇 include the role (and id if you want) in the response
   return NextResponse.json({ ok: true, role: user.role, userId: user._id.toString() });

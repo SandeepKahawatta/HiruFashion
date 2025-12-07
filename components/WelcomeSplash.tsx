@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -11,76 +11,148 @@ export default function WelcomeSplash({
   show: boolean
   onDone: () => void
 }) {
-  // Auto close after 2s
+  const [exit, setExit] = useState(false)
+
+  // Auto close sequence
   useEffect(() => {
     if (!show) return
-    const t = setTimeout(onDone, 4000)
-    return () => clearTimeout(t)
+
+    // Start exit animation slightly before the total time
+    const exitTimer = setTimeout(() => setExit(true), 3500)
+    const doneTimer = setTimeout(onDone, 4000)
+
+    return () => {
+      clearTimeout(exitTimer)
+      clearTimeout(doneTimer)
+    }
   }, [show, onDone])
 
   return (
     <AnimatePresence>
       {show && (
         <motion.div
+          className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden bg-black"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[1000] flex items-center justify-center"
-          // soft pastel sweep background that matches your brand
-          style={{
-            background:
-              'linear-gradient(135deg, #FF6FD8 0%, #FFC36E 30%, #8EE3F5 60%, #F7A8B8 100%)',
-          }}
+          exit={{ opacity: 0, transition: { duration: 0.8, ease: "easeInOut" } }}
         >
-          <motion.div
-            initial={{ scale: 0.8, rotate: -2 }}
-            animate={{ scale: 1, rotate: 0 }}
-            exit={{ scale: 0.95, opacity: 0 }}
-            transition={{ type: 'spring', stiffness: 220, damping: 18 }}
-            className="relative w-[240px] h-[240px] rounded-3xl shadow-2xl bg-white/10 backdrop-blur-lg ring-1 ring-white/40 overflow-hidden flex items-center justify-center"
-          >
+          {/* Animated Background Shapes */}
+          <div className="absolute inset-0 overflow-hidden">
             <motion.div
-              initial={{ y: 12, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.2, duration: 0.4 }}
-              className="flex flex-col items-center text-center px-4"
+              className="absolute top-[-20%] left-[-10%] w-[70vw] h-[70vw] rounded-full bg-purple-500/20 blur-[100px]"
+              animate={{
+                x: [0, 50, 0],
+                y: [0, 30, 0],
+                scale: [1, 1.1, 1]
+              }}
+              transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+            />
+            <motion.div
+              className="absolute bottom-[-20%] right-[-10%] w-[60vw] h-[60vw] rounded-full bg-blue-500/20 blur-[100px]"
+              animate={{
+                x: [0, -40, 0],
+                y: [0, -40, 0],
+                scale: [1, 1.2, 1]
+              }}
+              transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+            />
+            <motion.div
+              className="absolute top-[40%] left-[30%] w-[40vw] h-[40vw] rounded-full bg-pink-500/20 blur-[80px]"
+              animate={{
+                x: [0, 30, 0],
+                y: [0, 50, 0],
+                opacity: [0.3, 0.6, 0.3]
+              }}
+              transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+            />
+          </div>
+
+          {/* Main Content Container */}
+          <motion.div
+            className="relative z-10 flex flex-col items-center"
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 1.1, opacity: 0, filter: "blur(10px)" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
+            {/* Logo Container */}
+            <motion.div
+              className="relative w-32 h-32 mb-8 md:w-40 md:h-40"
+              initial={{ rotate: -10, scale: 0 }}
+              animate={{ rotate: 0, scale: 1 }}
+              transition={{
+                type: "spring",
+                stiffness: 260,
+                damping: 20,
+                delay: 0.2
+              }}
             >
-              <div className="relative w-40 h-40">
-                <Image
-                  src="/hirufashion-logo.jpg"
-                  alt="Hiru Fashion"
-                  fill
-                  className="object-contain"
-                  priority
+              <div className="absolute inset-0 bg-white/10 rounded-3xl backdrop-blur-md rotate-3" />
+              <div className="absolute inset-0 bg-white/20 rounded-3xl backdrop-blur-md -rotate-3" />
+              <div className="relative w-full h-full bg-white rounded-2xl shadow-2xl flex items-center justify-center p-4 overflow-hidden">
+                <motion.div
+                  animate={{ rotate: [0, 5, -5, 0] }}
+                  transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                  className="relative w-full h-full"
+                >
+                  <Image
+                    src="/hirufashion-logo.jpg"
+                    alt="Hiru Fashion"
+                    fill
+                    className="object-contain"
+                    priority
+                  />
+                </motion.div>
+                {/* Shine effect */}
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/40 to-transparent"
+                  initial={{ x: '-100%' }}
+                  animate={{ x: '100%' }}
+                  transition={{ duration: 1.5, delay: 1, repeat: Infinity, repeatDelay: 3 }}
                 />
               </div>
+            </motion.div>
+
+            {/* Text Content */}
+            <div className="text-center space-y-2 overflow-hidden">
+              <motion.h1
+                className="text-4xl md:text-5xl font-black text-white tracking-tighter"
+                initial={{ y: 40, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.5, duration: 0.6, ease: "easeOut" }}
+              >
+                HIRU <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">FASHION</span>
+              </motion.h1>
 
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-                className="mt-2"
+                transition={{ delay: 0.8, duration: 0.6 }}
               >
-                <h1 className="text-white font-extrabold tracking-wide text-xl drop-shadow">
-                  HIRU FASHION
-                </h1>
-                <p className="text-white/90 text-xs">
-                  Love what you wear, wear what you love
+                <p className="text-gray-300 text-sm md:text-base font-light tracking-widest uppercase">
+                  Love what you wear
                 </p>
               </motion.div>
+            </div>
 
-              {/* animated underline */}
+            {/* Loading Indicator */}
+            <motion.div
+              className="mt-12 w-48 h-1 bg-white/10 rounded-full overflow-hidden"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1 }}
+            >
               <motion.div
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ delay: 0.8, duration: 0.5 }}
-                className="mt-3 h-[3px] w-24 origin-left rounded-full bg-white/80"
+                className="h-full bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500"
+                initial={{ x: '-100%' }}
+                animate={{ x: '0%' }}
+                transition={{ duration: 2.5, ease: "easeInOut", delay: 1 }}
               />
             </motion.div>
-
-            {/* subtle corner glow */}
-            <div className="pointer-events-none absolute -bottom-20 -right-20 w-60 h-60 rounded-full bg-white/30 blur-2xl" />
           </motion.div>
+
+          {/* Curtain Exit Effect (Optional - if we want a curtain reveal) */}
+          {/* We are using a simple fade/scale exit above, but we could add overlay panels here if requested */}
         </motion.div>
       )}
     </AnimatePresence>
