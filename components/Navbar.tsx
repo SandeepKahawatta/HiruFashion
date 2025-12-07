@@ -68,9 +68,8 @@ export default function Navbar() {
       {/* Side drawer */}
       <aside
         id="sidebar"
-        className={`fixed top-0 left-0 h-full w-72 bg-white z-50 border-r shadow-xl transform transition-transform duration-200 ${
-          open ? 'translate-x-0' : '-translate-x-full'
-        }`}
+        className={`fixed top-0 left-0 h-full w-72 bg-white z-50 border-r shadow-xl transform transition-transform duration-200 ${open ? 'translate-x-0' : '-translate-x-full'
+          }`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="sidebar-title"
@@ -91,15 +90,18 @@ export default function Navbar() {
         <div className="p-4 space-y-1">
           {/* Auth block */}
           {!loading && (
-            <div className="mb-3 p-3 rounded-lg bg-gray-50">
-              {user ? (
-                <>
-                  <div className="text-sm text-gray-700">Signed in as</div>
-                  <div className="font-medium truncate">{user.name || user.email}</div>
-                </>
-              ) : (
-                <div className="text-sm text-gray-700">You are not signed in</div>
-              )}
+            <div className="mb-3 p-3 rounded-lg bg-gray-50 flex items-center gap-3">
+              <img src="/avatar.png" alt="User Avatar" className="w-10 h-10 rounded-full object-cover" />
+              <div className="overflow-hidden">
+                {user ? (
+                  <>
+                    <div className="text-sm text-gray-700">Signed in as</div>
+                    <div className="font-medium truncate">{user.name || user.email}</div>
+                  </>
+                ) : (
+                  <div className="text-sm text-gray-700">You are not signed in</div>
+                )}
+              </div>
             </div>
           )}
 
@@ -157,9 +159,8 @@ function NavItem({
     <Link
       href={href}
       onClick={onClick}
-      className={`block px-3 py-2 rounded hover:bg-gray-100 ${
-        active ? 'bg-gray-100 font-medium' : ''
-      }`}
+      className={`block px-3 py-2 rounded hover:bg-gray-100 ${active ? 'bg-gray-100 font-medium' : ''
+        }`}
     >
       {label}
     </Link>
