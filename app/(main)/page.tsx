@@ -1,7 +1,9 @@
 // app/page.tsx  (Home)
 import Link from 'next/link'
 import WelcomeGate from '@/components/WelcomeGate'
-import CategoryCard from '@/components/CategoryCard'
+import CollectionCard from '@/components/CollectionCard'
+import { COLLECTIONS } from '@/lib/data'
+import { ArrowUpRight } from 'lucide-react'
 import HeroSection from '@/components/HeroSection'
 import FeaturedCarousel from '@/components/FeaturedCarousel'
 import TestimonialSection from '@/components/TestimonialSection'
@@ -55,15 +57,40 @@ export default async function HomePage() {
         <HeroSection />
 
         {/* Categories Section */}
+        {/* Collections Section */}
         <section className="py-16 px-4 w-full lg:w-[80%] mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Shop by Category</h2>
-            <p className="text-gray-600">Explore our wide range of collections</p>
+          <div className="flex justify-between items-end mb-8">
+            <div>
+              <h2 className="text-3xl font-bold mb-2">Our Collections</h2>
+              <p className="text-gray-600">Explore our wide range of premium fashion</p>
+            </div>
+            <Link
+              href="/collections"
+              className="hidden md:flex items-center gap-2 text-sm font-semibold hover:text-gray-600 transition-colors"
+            >
+              See More <ArrowUpRight size={16} />
+            </Link>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
-            {displayCategories.map((c) => (
-              <CategoryCard key={c} name={c} />
+
+          <div className="grid grid-cols-2 lg:grid-cols-6 gap-4">
+            {COLLECTIONS.slice(0, 6).map((collection, index) => (
+              <CollectionCard
+                key={collection.name}
+                index={index}
+                compact={true}
+                {...collection}
+              />
             ))}
+          </div>
+
+          {/* Mobile See More Button */}
+          <div className="mt-8 text-center md:hidden">
+            <Link
+              href="/collections"
+              className="inline-flex items-center gap-2 text-sm font-semibold border border-black px-6 py-3 rounded-full hover:bg-black hover:text-white transition-all"
+            >
+              View All Collections <ArrowUpRight size={16} />
+            </Link>
           </div>
         </section>
 
