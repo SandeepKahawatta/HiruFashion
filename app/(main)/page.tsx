@@ -8,16 +8,7 @@ import TestimonialSection from '@/components/TestimonialSection'
 import NewsletterSection from '@/components/NewsletterSection'
 import { cookies } from 'next/headers'
 
-type Product = {
-  id?: string
-  _id?: string
-  name: string
-  slug: string
-  category?: string
-  price: number
-  image?: string
-  images?: string[]
-}
+import { Product } from '@/lib/types'
 
 function pickRandom<T>(arr: T[], n: number) {
   // simple Fisher–Yates
