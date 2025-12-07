@@ -25,7 +25,7 @@ export default function CategoryCard({ name }: { name: string }) {
   return (
     <Link
       href={href}
-      className="group relative block rounded-2xl overflow-hidden aspect-[4/5] md:aspect-[3/4]"
+      className="group relative block rounded-2xl overflow-hidden aspect-[3/4] md:aspect-[2/3]"
     >
       <Image
         src={img}

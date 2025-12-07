@@ -69,12 +69,12 @@ export default function FeaturedCarousel({ products, title }: { products: Produc
                         onDragEnd={(e, info) => {
                             setX(Math.min(0, Math.max(x + info.offset.x, -width)))
                         }}
-                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                        transition={{ type: "spring", stiffness: 100, damping: 20, mass: 1 }}
                     >
                         {products.map((product) => (
                             <motion.div
                                 key={product.id || product._id}
-                                className="min-w-[280px] md:min-w-[320px]"
+                                className="min-w-[200px] md:min-w-[240px]"
                             >
                                 <ProductCard product={product} />
                             </motion.div>
