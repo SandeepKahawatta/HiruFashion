@@ -1,7 +1,7 @@
 export default function NewsletterSection() {
     return (
         <section className="py-20 bg-black text-white">
-            <div className="container mx-auto px-4 text-center">
+            <div className="w-full lg:w-[80%] mx-auto px-4 text-center">
                 <h2 className="text-3xl md:text-4xl font-bold mb-4">Join Our Newsletter</h2>
                 <p className="text-gray-400 mb-8 max-w-xl mx-auto">
                     Subscribe to get special offers, free giveaways, and once-in-a-lifetime deals.

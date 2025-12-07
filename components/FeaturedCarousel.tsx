@@ -40,7 +40,7 @@ export default function FeaturedCarousel({ products, title }: { products: Produc
 
     return (
         <section className="py-12 bg-gray-50 relative group">
-            <div className="container mx-auto px-4">
+            <div className="w-full lg:w-[80%] mx-auto px-4">
                 <div className="flex justify-between items-end mb-8">
                     <div>
                         <h2 className="text-3xl font-bold text-gray-900 mb-2">{title}</h2>

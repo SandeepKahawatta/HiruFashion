@@ -23,7 +23,7 @@ export default function ShopPageClient({ products }: { products: Product[] }) {
     }, [isMobileFilterOpen]);
 
     return (
-        <div className="container mx-auto px-4 py-8">
+        <div className="w-full lg:w-[80%] mx-auto px-4 py-8">
             {/* Mobile Filter Drawer */}
             {(isMobileFilterOpen || isAnimating) && (
                 <div className={`fixed inset-0 z-50 lg:hidden`}>

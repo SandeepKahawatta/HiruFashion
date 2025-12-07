@@ -104,7 +104,7 @@ export default function Navbar() {
         className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${scrolled || isMenuOpen ? 'bg-white/90 backdrop-blur-md shadow-sm' : 'bg-transparent'
           }`}
       >
-        <div className="container mx-auto px-4 h-20 flex items-center justify-between">
+        <div className="w-full lg:w-[80%] mx-auto px-4 h-20 flex items-center justify-between">
 
           {/* Mobile Menu Button */}
           <button

@@ -64,7 +64,7 @@ export default async function HomePage() {
         <HeroSection />
 
         {/* Categories Section */}
-        <section className="py-16 px-4 container mx-auto">
+        <section className="py-16 px-4 w-full lg:w-[80%] mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">Shop by Category</h2>
             <p className="text-gray-600">Explore our wide range of collections</p>

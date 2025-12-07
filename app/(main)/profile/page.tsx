@@ -1,6 +1,6 @@
 export default function ProfilePage() {
     return (
-        <div className="container mx-auto px-4 py-12">
+        <div className="w-full lg:w-[80%] mx-auto px-4 py-12">
             <h1 className="text-3xl font-bold mb-8">My Profile</h1>
             <div className="bg-white border rounded-xl p-8 max-w-2xl">
                 <div className="flex items-center gap-4 mb-8">

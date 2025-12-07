@@ -55,25 +55,25 @@ export default function ProductCard({ product }: { product: Product & { images?:
       </div>
 
       {/* Content - Left Aligned */}
-      <div className="flex-1 flex flex-col items-start w-full space-y-1 sm:space-y-2 px-2">
-        <h3 className="text-sm sm:text-base md:text-xl font-extrabold uppercase text-[#C8A17D] tracking-wider text-left line-clamp-1">
+      <div className="flex-1 flex flex-col items-start w-full space-y-1 px-2">
+        <h3 className="text-sm sm:text-base md:text-lg font-extrabold uppercase text-[#C8A17D] tracking-wider text-left line-clamp-1">
           <Link href={`/products/${product.slug}`}>
             <span aria-hidden="true" className="absolute inset-0" />
             {product.name}
           </Link>
         </h3>
 
-        <div className="bg-black text-white text-[10px] sm:text-xs md:text-sm font-bold px-3 py-1 sm:px-4 rounded-full shadow-md whitespace-nowrap">
+        <div className="bg-black text-white text-[10px] sm:text-xs font-bold px-3 py-1 rounded-full shadow-md whitespace-nowrap">
           LKR {(product.price / 100).toFixed(2)}
         </div>
       </div>
 
       {/* Add to Cart Button - 75% Width, Left Aligned */}
-      <div className="mt-4 w-full flex justify-start relative z-20 px-2">
+      <div className="mt-3 w-full flex justify-start relative z-20 px-2">
         <AddToCartButton
           id={product.id ?? ''}
           size="default"
-          className="!w-[85%] sm:!w-[75%] !rounded-xl !bg-[#C8A17D] !text-white hover:!bg-[#B08D69] shadow-md flex items-center justify-center gap-1 sm:gap-2 font-bold tracking-wide text-[10px] sm:text-xs md:text-sm whitespace-nowrap !px-2 !py-2 sm:!px-4 sm:!py-3"
+          className="!w-[85%] sm:!w-[75%] !rounded-xl !bg-[#C8A17D] !text-white hover:!bg-[#B08D69] shadow-md flex items-center justify-center gap-1 sm:gap-2 font-bold tracking-wide text-[10px] sm:text-xs whitespace-nowrap !px-2 !py-2"
           icon={<ShoppingBag className="w-3 h-3 sm:w-4 sm:h-4" />}
         />
       </div>

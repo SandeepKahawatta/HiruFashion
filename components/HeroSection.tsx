@@ -18,7 +18,7 @@ export default function HeroSection() {
             </div>
 
             {/* Content */}
-            <div className="relative z-10 text-center text-white px-4 max-w-4xl mx-auto animate-fade-in-up">
+            <div className="relative z-10 text-center text-white px-4 w-full lg:w-[80%] mx-auto animate-fade-in-up">
                 <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 tracking-tight leading-tight">
                     Redefine Your <span className="text-yellow-400">Style</span>
                 </h1>
