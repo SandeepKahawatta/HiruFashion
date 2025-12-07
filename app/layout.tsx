@@ -2,7 +2,9 @@ import type { Metadata } from 'next'
 import './globals.css'
 import { Inter } from 'next/font/google'
 import { CartProvider } from '@/lib/cart'
+import { WishlistProvider } from '@/lib/wishlist-context'
 import { ensureAdminSeed } from '@/lib/seed/seed'
+import { Toaster } from 'sonner'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -20,7 +22,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang="en">
       <body className={`${inter.className} min-h-screen flex flex-col`}>
         <CartProvider>
-          {children}
+          <WishlistProvider>
+            {children}
+            <Toaster position="top-center" richColors />
+          </WishlistProvider>
         </CartProvider>
       </body>
     </html>

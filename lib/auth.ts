@@ -6,7 +6,7 @@ const JWT_SECRET = process.env.JWT_SECRET!
 const COOKIE_NAME = 'session'                // JWT (httpOnly)
 const PUBLIC_COOKIE = 'session_public'       // JSON (readable by middleware)
 
-export type SessionPayload = { userId: string; role: 'user'|'admin'; email: string }
+export type SessionPayload = { userId: string; role: 'user' | 'admin'; email: string }
 
 export function signSession(payload: SessionPayload) {
   return jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' })
@@ -63,4 +63,13 @@ export function decodeSession(raw: string | undefined) {
 
 export function requireAdmin(role?: string) {
   if (role !== 'admin') throw new Response('Forbidden', { status: 403 })
+}
+
+export function setWelcomeCookie() {
+  cookies().set('welcome_toast', 'true', {
+    httpOnly: false, // Allow client to read/clear if needed
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 60, // 1 minute expiry
+  })
 }

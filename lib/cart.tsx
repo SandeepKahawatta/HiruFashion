@@ -1,6 +1,7 @@
 "use client"
 
 import { createContext, useContext, useEffect, useMemo, useReducer, useState } from "react"
+import { toast } from "sonner"
 
 /** What we persist in localStorage */
 export type CartItemStored = {
@@ -82,7 +83,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       if (Array.isArray(parsed.items)) {
         parsed.items.forEach(i => dispatch({ type: "ADD", id: i.id, qty: i.qty, size: i.size, color: i.color }))
       }
-    } catch {}
+    } catch { }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -168,20 +169,26 @@ export function AddToCartButton({
   size,
   color,
   className = "",
+  icon,
 }: {
   id: string
   qty?: number
   size?: string
   color?: string
   className?: string
+  icon?: React.ReactNode
 }) {
   const { addItem } = useCart()
   return (
     <button
-      className={`rounded-xl bg-black text-white px-4 py-3 ${className}`}
-      onClick={() => addItem(id, qty, size, color)}
+      className={`rounded-xl bg-black text-white px-4 py-3 flex items-center justify-center gap-2 ${className}`}
+      onClick={() => {
+        addItem(id, qty, size, color)
+        toast.success('Added to cart')
+      }}
     >
-      Add to cart
+      {icon}
+      <span>Add to cart</span>
     </button>
   )
 }

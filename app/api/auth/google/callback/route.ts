@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { dbConnect } from '@/lib/db';
 import User from '@/lib/models/User';
-import { setSessionCookie } from '@/lib/auth';
+import { setSessionCookie, setWelcomeCookie } from '@/lib/auth';
 
 export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
@@ -71,6 +71,7 @@ export async function GET(req: Request) {
 
         // 4. Set session
         setSessionCookie({ userId: user._id.toString(), role: user.role, email: user.email });
+        setWelcomeCookie();
 
         return NextResponse.redirect(new URL('/', req.url));
 
