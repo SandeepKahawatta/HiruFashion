@@ -1,6 +1,7 @@
 "use client"
 
 import { createContext, useContext, useEffect, useMemo, useReducer, useState } from "react"
+import { toast } from "sonner"
 
 /** What we persist in localStorage */
 export type CartItemStored = {
@@ -181,7 +182,10 @@ export function AddToCartButton({
   return (
     <button
       className={`rounded-xl bg-black text-white px-4 py-3 flex items-center justify-center gap-2 ${className}`}
-      onClick={() => addItem(id, qty, size, color)}
+      onClick={() => {
+        addItem(id, qty, size, color)
+        toast.success('Added to cart')
+      }}
     >
       {icon}
       <span>Add to cart</span>

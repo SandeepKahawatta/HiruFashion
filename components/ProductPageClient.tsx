@@ -9,6 +9,7 @@ import { ChevronLeft, ChevronRight, Minus, Plus, Heart, Share2, Truck, RefreshCw
 import { motion, AnimatePresence } from 'framer-motion'
 import RelatedProducts from './RelatedProducts'
 import Link from 'next/link'
+import { toast } from 'sonner'
 
 export default function ProductPageClient({ product, relatedProducts = [] }: { product: Product, relatedProducts?: Product[] }) {
   const router = useRouter()
@@ -59,6 +60,10 @@ export default function ProductPageClient({ product, relatedProducts = [] }: { p
   const handleAddToCart = () => {
     if (!canAdd) return
     addItem(productId, quantity, selectedSize, selectedColor)
+    toast.success('Added to cart', {
+      description: `${product.name} (${quantity}x) has been added to your cart.`,
+      duration: 3000,
+    })
   }
 
   const handleBuyNow = () => {
@@ -350,8 +355,8 @@ export default function ProductPageClient({ product, relatedProducts = [] }: { p
                   key={tab}
                   onClick={() => setActiveTab(tab)}
                   className={`pb-4 text-sm font-bold uppercase tracking-wider transition-all relative ${activeTab === tab
-                      ? 'text-black'
-                      : 'text-gray-400 hover:text-gray-600'
+                    ? 'text-black'
+                    : 'text-gray-400 hover:text-gray-600'
                     }`}
                 >
                   {tab === 'Fit' ? 'Fit & Fabric' : tab}
