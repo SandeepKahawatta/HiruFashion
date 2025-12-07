@@ -2,19 +2,17 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import WelcomeSplash from './WelcomeSplash'
+import { deleteCookie } from 'cookies-next' // We might need a way to clear cookie client side, or just set expired
 
-export default function WelcomeGate() {
-  const [show, setShow] = useState(false)
+export default function WelcomeGate({ initialShow = false }: { initialShow?: boolean }) {
+  const [show, setShow] = useState(initialShow)
 
   useEffect(() => {
-    // Only show if login flow set the flag *this tab session*
-    const shouldShow = sessionStorage.getItem('show_welcome_once') === '1'
-    if (shouldShow) {
-      setShow(true)
-      // clear immediately so refresh won't show it again
-      sessionStorage.removeItem('show_welcome_once')
+    if (initialShow) {
+      // Clear the cookie so it doesn't show again on refresh
+      document.cookie = 'welcome_toast=; Max-Age=0; path=/;'
     }
-  }, [])
+  }, [initialShow])
 
   const handleDone = useCallback(() => setShow(false), [])
 

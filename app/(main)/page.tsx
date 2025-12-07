@@ -1,8 +1,12 @@
 // app/page.tsx  (Home)
 import Link from 'next/link'
-import ProductCard from '@/components/ProductCard'
 import WelcomeGate from '@/components/WelcomeGate'
 import CategoryCard from '@/components/CategoryCard'
+import HeroSection from '@/components/HeroSection'
+import FeaturedCarousel from '@/components/FeaturedCarousel'
+import TestimonialSection from '@/components/TestimonialSection'
+import NewsletterSection from '@/components/NewsletterSection'
+import { cookies } from 'next/headers'
 
 type Product = {
   id?: string
@@ -15,16 +19,12 @@ type Product = {
   images?: string[]
 }
 
-function slugify(s: string) {
-  return s.toLowerCase().trim().replace(/\s+/g, '-')
-}
-
 function pickRandom<T>(arr: T[], n: number) {
   // simple Fisher–Yates
   const a = arr.slice()
   for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1))
-    ;[a[i], a[j]] = [a[j], a[i]]
+      ;[a[i], a[j]] = [a[j], a[i]]
   }
   return a.slice(0, n)
 }
@@ -33,42 +33,63 @@ export const dynamic = 'force-dynamic'
 
 export default async function HomePage() {
   const base = process.env.NEXT_PUBLIC_BASE_URL || ''
-  const res = await fetch(`${base}/api/products`, { cache: 'no-store' })
-  if (!res.ok) throw new Error('Failed to load products')
-  const products: Product[] = await res.json()
+  let products: Product[] = []
+
+  try {
+    const res = await fetch(`${base}/api/products`, { cache: 'no-store' })
+    if (res.ok) {
+      products = await res.json()
+    }
+  } catch (error) {
+    console.error("Failed to fetch products", error)
+  }
 
   const categories = Array.from(
     new Set(products.map((p) => p.category).filter(Boolean) as string[])
   ).sort()
 
-  const featured = pickRandom(products, Math.min(6, products.length))
+  // If no categories found (e.g. empty DB), provide some defaults for UI testing
+  const displayCategories = categories.length > 0 ? categories : ['Dresses', 'Shirts', 'Pants', 'Frock', 'Slippers', 'Bags']
+
+  const trending = pickRandom(products, Math.min(8, products.length))
+  const newArrivals = pickRandom(products, Math.min(8, products.length))
+
+  const showWelcome = cookies().get('welcome_toast')?.value === 'true'
 
   return (
     <>
-    <WelcomeGate />
-    <div className="px-4 py-6 space-y-6">
-      {/* Categories */}
-      <section>
-  <h2 className="text-lg font-semibold mb-3">Shop by Category</h2>
-  {/* grid of cards, mobile-first */}
-  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-    {categories.map((c) => (
-      <CategoryCard key={c} name={c} />
-    ))}
-  </div>
-</section>
+      <WelcomeGate initialShow={showWelcome} />
 
+      <div className="flex flex-col min-h-screen">
+        <HeroSection />
 
-      {/* Featured (random 6) */}
-      {/* <section>
-        <h2 className="text-lg font-semibold mb-3">Featured</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
-          {featured.map((p) => (
-            <ProductCard key={(p as any).id || (p as any)._id} product={p as any} />
-          ))}
-        </div>
-      </section> */}
-    </div>
+        {/* Categories Section */}
+        <section className="py-16 px-4 container mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Shop by Category</h2>
+            <p className="text-gray-600">Explore our wide range of collections</p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
+            {displayCategories.map((c) => (
+              <CategoryCard key={c} name={c} />
+            ))}
+          </div>
+        </section>
+
+        {/* Trending Products */}
+        {products.length > 0 && (
+          <FeaturedCarousel products={trending} title="Trending Now" />
+        )}
+
+        {/* New Arrivals */}
+        {products.length > 0 && (
+          <FeaturedCarousel products={newArrivals} title="New Arrivals" />
+        )}
+
+        <TestimonialSection />
+
+        <NewsletterSection />
+      </div>
     </>
   )
 }

@@ -22,7 +22,6 @@ export default function RegisterPage() {
             });
 
             if (res.ok) {
-                sessionStorage.setItem('show_welcome_once', '1');
                 window.dispatchEvent(new Event('auth:changed'));
                 router.push('/');
             } else {

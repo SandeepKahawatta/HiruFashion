@@ -29,7 +29,6 @@ export default function LoginPage() {
             const data = await res.json();
 
             window.dispatchEvent(new Event('auth:changed'));
-            sessionStorage.setItem('show_welcome_once', '1');
 
             if (data.role === 'admin') {
                 router.push('/admin/products');
