@@ -1,14 +1,7 @@
 import { Suspense } from 'react'
 import ProductCard from '@/components/ProductCard'
 
-type Product = {
-    id: string
-    name: string
-    price: number
-    images: string[]
-    slug: string
-    category: string
-}
+import { Product } from '@/lib/types'
 
 async function getSearchResults(q: string) {
     const base = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'

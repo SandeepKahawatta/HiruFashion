@@ -5,16 +5,7 @@ import { motion } from 'framer-motion'
 import ProductCard from './ProductCard'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
-type Product = {
-    id?: string
-    _id?: string
-    name: string
-    slug: string
-    category?: string
-    price: number
-    image?: string
-    images?: string[]
-}
+import { Product } from '@/lib/types'
 
 export default function FeaturedCarousel({ products, title }: { products: Product[], title: string }) {
     const [width, setWidth] = useState(0)
